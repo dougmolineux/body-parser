@@ -4,51 +4,42 @@
  * MIT Licensed
  */
 
-/**
- * Module dependencies.
- */
-
-var deprecate = require('depd')('body-parser')
-var fs = require('fs')
-var path = require('path')
+var deprecate = require('depd')('body-parser');
+var fs = require('fs');
+var path = require('path');
 
 /**
  * Module exports.
  */
-
 exports = module.exports = deprecate.function(bodyParser,
-  'bodyParser: use individual json/urlencoded middlewares')
+  'bodyParser: use individual json/urlencoded middlewares');
 
 /**
  * Path to the parser modules.
  */
-
-var parsersDir = path.join(__dirname, 'lib', 'types')
+var parsersDir = path.join(__dirname, 'lib', 'types');
 
 /**
  * Auto-load bundled parsers with getters.
  */
-
 fs.readdirSync(parsersDir).forEach(function onfilename(filename) {
-  if (!/\.js$/.test(filename)) return
-
-  var loc = path.resolve(parsersDir, filename)
-  var mod
-  var name = path.basename(filename, '.js')
-
+  if (!/\.js$/.test(filename)) {
+    return
+  }
+  var loc = path.resolve(parsersDir, filename);
+  var mod;
+  var name = path.basename(filename, '.js');
   function load() {
     if (mod) {
-      return mod
+      return mod;
     }
-
-    return mod = require(loc)
+    return mod = require(loc);
   }
-
   Object.defineProperty(exports, name, {
     configurable: true,
     enumerable: true,
     get: load
-  })
+  });
 })
 
 /**
@@ -59,21 +50,18 @@ fs.readdirSync(parsersDir).forEach(function onfilename(filename) {
  * @deprecated
  * @api public
  */
-
 function bodyParser(options){
-  var opts = {}
-
-  options = options || {}
-
+  var opts = {};
+  options = options || {};
   // exclude type option
   for (var prop in options) {
     if ('type' !== prop) {
-      opts[prop] = options[prop]
+      opts[prop] = options[prop];
     }
   }
 
-  var _urlencoded = exports.urlencoded(opts)
-  var _json = exports.json(opts)
+  var _urlencoded = exports.urlencoded(opts);
+  var _json = exports.json(opts);
 
   return function bodyParser(req, res, next) {
     _json(req, res, function(err){
